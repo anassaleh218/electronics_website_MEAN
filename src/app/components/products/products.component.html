@@ -1,0 +1,60 @@
+<section class="contain">
+  <div class="row mt-3">
+    <div class="col-12">
+      <div class="container d-flex justify-content-around">
+        <h2><strong>ElectroM</strong></h2>
+
+        <ul class="nav nav-tabs">
+          <li class="nav-item" routerLink="/products">
+            <a class="nav-link active text-dark" href="#">Products</a>
+          </li>
+          <li class="nav-item" routerLink="/cart">
+            <a class="nav-link text-dark"   href="#">Cart</a>
+          </li>
+        </ul>
+
+
+        <div class="serach  col-6">
+          <input class="form-control" type="text" [(ngModel)]="title" id="search" placeholder="Search"
+            (input)="searchTitle(title)">
+        </div>
+
+        <div class="form-group">
+          <select class="form-control" id="category" [(ngModel)]="category" (change)="searchCategory(category)">
+            <option value="">Categorys ></option>
+            <option value="Headphones">Head Phones</option>  
+            <option value="Office">Office</option>  
+            <option value="Keyboard">KeyBoard</option>  
+            <option value="Mouse">Mouse</option>
+            <option value="Screen">Screen</option>  
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select class="form-control" id="sort" [(ngModel)]="sortBy" (change)="sortProducts()">
+            <option value="">Sort By</option>
+            <option value="name_asc">Name Ascending</option>
+            <option value="name_desc">Name Descending</option>
+            <option value="price_asc">Price Ascending</option>
+            <option value="price_desc">Price Descending</option>
+          </select>
+        </div>
+      </div>
+
+
+
+
+      <div class="col-12 mt-3 d-flex flex-wrap gap-3 justify-content-around">
+        <!-- Loop through filteredProducts -->
+        <ng-container *ngIf="filteredProducts && filteredProducts.length; else noProducts">
+          <app-card *ngFor="let item of filteredProducts" [product]="item"></app-card>
+        </ng-container>
+
+        <!-- Fallback template if no products are found -->
+        <ng-template #noProducts>
+          <p>No products found.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</section>

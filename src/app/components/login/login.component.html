@@ -1,0 +1,72 @@
+<section class="login_box_area py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <!-- Left Column - Info Section -->
+      <div class="col-lg-6 d-none d-lg-block">
+        <div class="login_box_img bg-light text-center p-5 rounded shadow-sm">
+          <h4 class="mb-4">New to our website?</h4>
+          <p class="mb-5">
+            Discover the latest in science and technology. Join us and create an account today!
+          </p>
+          <a class="btn btn-primary btn-lg" routerLink="/register">Create an Account</a>
+        </div>
+      </div>
+
+      <!-- Right Column - Login Form -->
+      <div class="col-lg-5 col-md-8">
+        <div class="login_form_inner bg-white p-5 rounded shadow-sm">
+          <h3 class="text-center mb-4">Log in to enter</h3>
+          <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+            <!-- Email Field -->
+            <div class="form-group">
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Email"
+                [(ngModel)]="loginData.email"
+                #email="ngModel"
+                required
+              />
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="Password"
+                [(ngModel)]="loginData.password"
+                #password="ngModel"
+                required
+              />
+            </div>
+
+            <!-- Keep me logged in -->
+            <div class="form-check mb-3">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="keepLoggedIn"
+                [(ngModel)]="loginData.keepLoggedIn"
+                name="keepLoggedIn"
+              />
+              <label class="form-check-label" for="keepLoggedIn">Keep me logged in</label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-success w-100">Log In</button>
+
+            <!-- Forgot Password Link -->
+            <div class="text-center mt-3">
+              <a routerLink="/forgot-password" class="text-muted">Forgot Password?</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

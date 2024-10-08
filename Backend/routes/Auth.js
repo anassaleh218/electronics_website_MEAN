@@ -22,7 +22,12 @@ router.post("/", Validator, async (req, res) => {
 
     // password correct
     res.header("x-auth-token", token);
-    res.status(200).send("loggedin successfully");
+    res.status(200).json({
+      token: token,
+      isAdmin: user.isAdmin,
+      userName: user.name, // Assuming user model has a 'name' field
+      message: "Logged in successfully"
+    });
 
   } catch (err) {
     // for (let i in err.errors) {

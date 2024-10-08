@@ -20,8 +20,8 @@ router.post("/bill", async (req, res) => {
         const userId = decodedPayload.userid;
 
         const bill = new OrderBilling({
-            UserId: userId,
-            OrderId: req.body.OrderId,
+            userId: userId,
+            orderId: req.body.orderId,
             name: req.body.name,
             phone1: req.body.phone1,
             phone2: req.body.phone2,
@@ -52,7 +52,7 @@ router.post("/", async (req, res) => {
         const userId = decodedPayload.userid;
 
         // Find the user's cart
-        const cart = await Cart.findOne({ UserId: userId });
+        const cart = await Cart.findOne({ userId: userId });
 
         if (!cart) {
             return res.status(404).send("Cart not found");
@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
         await order.save();
 
         // Find all cart products for the user's cart
-        const cartProducts = await CartProducts.find({ CartId: cart.id });
+        const cartProducts = await CartProducts.find({ cartId: cart.id });
 
         if (cartProducts.length === 0) {
             return res.status(400).send("No products in cart");
@@ -71,15 +71,15 @@ router.post("/", async (req, res) => {
 
         // Map cart products to order products and create them in bulk
         const orderProductsData = cartProducts.map(item => ({
-            OrderId: order.id,
-            ProductId: item.ProductId,
+            orderId: order.id,
+            productId: item.productId._id,
             quantity: item.quantity
         }));
 
         await OrderProducts.insertMany(orderProductsData);
 
         // Optionally, you can clear the cart products after moving them to order products
-        await CartProducts.deleteMany({ CartId: cart.id });
+        await CartProducts.deleteMany({ cartId: cart.id });
 
         return res.status(200).send("Order created and cart products moved successfully");
     } catch (err) {
@@ -88,40 +88,56 @@ router.post("/", async (req, res) => {
     }
 });
 
-// 3. Get User's Latest Order
-router.get("/", async (req, res) => {
-    const token = req.header("x-auth-token");
+//3. Get User's Latest Order with Billing Information
+router.get('/latest', async (req, res) => {
+    const token = req.header('x-auth-token');
+    if (!token) return res.status(401).send('Access Denied');
 
     try {
         const decodedPayload = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decodedPayload.userid;
 
-        const order = await Order.findOne({ userId: userId }).sort({ createdAt: -1 });
+        // Retrieve the latest order for the user
+        const latestOrderBilling = await OrderBilling.findOne({ userId: userId })
+            .sort({ createdAt: -1 })
+            .populate('orderId'); // Populate the Order
 
-        if (!order) {
-            return res.status(404).send("Order not found");
+        // Check if the latest order exists
+        if (!latestOrderBilling) {
+            return res.status(404).send('No orders found for the user');
         }
 
-        const orderProducts = await OrderProducts.find({ OrderId: order.id }).populate({
-            path: 'Product',
-            model: Product
+        // Retrieve order products related to the orderId
+        const orderProducts = await OrderProducts.find({ orderId: latestOrderBilling.orderId })
+            .populate({
+                path: 'productId',  // Populate the productId in OrderProducts
+                model: 'Product'
+            });
+
+        // Convert the orderBilling object to a plain JSON object
+        const orderBillingJSON = latestOrderBilling.toObject();
+        orderBillingJSON.orderId.orderProducts = orderProducts;  // Attach the products to the order
+
+        // Process each orderProduct's img_url field and split it into an array
+        orderBillingJSON.orderId.orderProducts = orderBillingJSON.orderId.orderProducts.map(orderProduct => {
+            if (orderProduct.productId) {
+                orderProduct.productId.img_urls = orderProduct.productId.img_url 
+                    ? orderProduct.productId.img_url.split(',') 
+                    : [];
+            }
+            return orderProduct;
         });
 
-        // Process order products to transform img_url fields
-        const orderProductsData = orderProducts.map(orderProduct => {
-            const orderProductJSON = orderProduct.toObject();
-            orderProductJSON.Product.img_urls = orderProductJSON.Product.img_url ? orderProductJSON.Product.img_url.split(',') : [];
-            return orderProductJSON;
-        });
-
-        return res.status(200).json(orderProductsData);
+        // Return the latest order with billing information
+        return res.status(200).json(orderBillingJSON);
     } catch (err) {
         console.error('Error:', err.message);
-        res.status(400).send("Order items NOT retrieved");
+        res.status(400).send('Error retrieving latest order with billing');
     }
 });
 
-// 4. Get All Orders Billing for User
+
+// 4. Get All Orders with Billing for User
 router.get('/all', async (req, res) => {
     const token = req.header('x-auth-token');
     if (!token) return res.status(401).send('Access Denied');
@@ -130,34 +146,50 @@ router.get('/all', async (req, res) => {
         const decodedPayload = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decodedPayload.userid;
 
-        const ordersBilling = await OrderBilling.find({ UserId: userId })
+        // Retrieve all orders for the user
+        const ordersBilling = await OrderBilling.find({ userId: userId })
             .sort({ createdAt: -1 })
-            .populate({
-                path: 'order',
-                populate: {
-                    path: 'orderProducts',
-                    populate: {
-                        path: 'Product'
-                    }
-                }
-            });
+            .populate('orderId'); // Populate the Order
 
-        // Process the orders to transform img_url fields
-        const ordersData = ordersBilling.map(orderBilling => {
+        if (!ordersBilling || ordersBilling.length === 0) {
+            return res.status(404).send('No orders found for the user');
+        }
+
+        // Map through each orderBilling, and for each one, find its corresponding orderProducts
+        const ordersData = await Promise.all(ordersBilling.map(async orderBilling => {
             const orderBillingJSON = orderBilling.toObject();
-            orderBillingJSON.order.orderProducts = orderBillingJSON.order.orderProducts.map(orderProduct => {
-                orderProduct.Product.img_urls = orderProduct.Product.img_url ? orderProduct.Product.img_url.split(',') : [];
+
+            // Retrieve order products for this orderId
+            const orderProducts = await OrderProducts.find({ orderId: orderBilling.orderId })
+                .populate({
+                    path: 'productId',  // Populate the productId in OrderProducts
+                    model: 'Product'
+                });
+
+            // Attach order products to the order
+            orderBillingJSON.orderId.orderProducts = orderProducts;
+
+            // Process each orderProduct's img_url field and split it into an array
+            orderBillingJSON.orderId.orderProducts = orderBillingJSON.orderId.orderProducts.map(orderProduct => {
+                if (orderProduct.productId) {
+                    orderProduct.productId.img_urls = orderProduct.productId.img_url 
+                        ? orderProduct.productId.img_url.split(',') 
+                        : [];
+                }
                 return orderProduct;
             });
-            return orderBillingJSON;
-        });
 
+            return orderBillingJSON;
+        }));
+
+        // Return all orders with billing information
         return res.status(200).json(ordersData);
     } catch (err) {
         console.error('Error:', err.message);
         res.status(400).send('Error retrieving orders');
     }
 });
+
 
 // 5. Get Order Billing Details by ID
 router.get('/:id', async (req, res) => {
@@ -168,38 +200,46 @@ router.get('/:id', async (req, res) => {
         const decodedPayload = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decodedPayload.userid;
 
-        // Fetch order details including associated models
-        const ordersBilling = await OrderBilling.findOne({
-            OrderId: req.params.id,
-            UserId: userId
-        })
-        .populate({
-            path: 'order',
-            populate: {
-                path: 'orderProducts',
-                populate: {
-                    path: 'Product'
-                }
-            }
-        });
+        // Fetch order billing with the specific order ID and user
+        const orderBilling = await OrderBilling.findOne({
+            orderId: req.params.id,
+            userId: userId
+        }).populate('orderId'); // Populate the Order
 
-        // If no order found, return 404
-        if (!ordersBilling) {
+        // If no order is found, return 404
+        if (!orderBilling) {
             return res.status(404).send('No order found for this ID');
         }
 
-        // Process orders to transform img_url fields
-        const ordersData = ordersBilling.toObject();
-        ordersData.order.orderProducts = ordersData.order.orderProducts.map(orderProduct => {
-            orderProduct.Product.img_urls = orderProduct.Product.img_url ? orderProduct.Product.img_url.split(',') : [];
+        // Convert the orderBilling object to a plain JSON object
+        const orderBillingJSON = orderBilling.toObject();
+
+        // Retrieve order products for the specific orderId
+        const orderProducts = await OrderProducts.find({ orderId: req.params.id })
+            .populate({
+                path: 'productId', // Populate the productId in OrderProducts
+                model: 'Product'
+            });
+
+        // Attach order products to the orderId
+        orderBillingJSON.orderId.orderProducts = orderProducts;
+
+        // Process each orderProduct's img_url field and split it into an array
+        orderBillingJSON.orderId.orderProducts = orderBillingJSON.orderId.orderProducts.map(orderProduct => {
+            if (orderProduct.productId) {
+                orderProduct.productId.img_urls = orderProduct.productId.img_url 
+                    ? orderProduct.productId.img_url.split(',') 
+                    : [];
+            }
             return orderProduct;
         });
 
-        // Return processed order data
-        return res.status(200).json(ordersData);
+        // Return the processed order with billing data
+        return res.status(200).json(orderBillingJSON);
     } catch (err) {
         console.error('Error:', err.message);
-        res.status(400).send('Error retrieving orders');
+        res.status(400).send('Error retrieving order');
     }
 });
+
 module.exports = router;

@@ -1,0 +1,60 @@
+<section class="order_details section-margin--small py-5 bg-light">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-12 text-center">
+          <h2 class="mb-4">Your Orders</h2>
+        </div>
+      </div>
+  
+      <div class="row mb-5" id="orders">
+        <!-- If no orders exist -->
+        <ng-container *ngIf="orders.length === 0; else orderList">
+          <div class="col-12 text-center">
+            <h4 class="text-secondary">No orders have been created yet!</h4>
+            <h5 class="text-primary mt-2">Don't wait! Add products to your cart and place an order now!</h5>
+          </div>
+        </ng-container>
+  
+        <!-- If orders exist -->
+        <ng-template #orderList>
+          <div class="col-md-6 col-xl-4 mb-4" *ngFor="let item of orders">
+            <div class="card shadow-sm confirmation-card p-3">
+              <h4 class="card-title billing-title">
+                <a [routerLink]="['/order-details', item.orderId._id]" class="stretched-link text-decoration-none">
+                    Order Info
+                  </a>
+                  
+              </h4>
+              <div class="card-body p-0">
+                <table class="table table-borderless mb-0">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted">Order number</td>
+                      <td class="text-end">{{ item.orderId._id }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Order Status</td>
+                      <td class="text-end">{{ item.orderId.order_status }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Order Date</td>
+                      <td class="text-end">{{ item.createdAt | date: 'yyyy-MM-dd' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Order Cost</td>
+                      <td class="text-end">${{ item.totalCost }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Payment Method</td>
+                      <td class="text-end">{{ item.paymentMethod }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </section>
+  

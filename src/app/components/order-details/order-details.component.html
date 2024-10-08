@@ -1,0 +1,113 @@
+<section class="order_details section-margin--small">
+    <div class="container">
+      <p class="text-center billing-alert">
+        Thank you. Your order has been received.
+      </p>
+      <div class="row mb-5" *ngIf="order">
+        <div class="col-md-6 col-xl-4 mb-4 mb-xl-0">
+          <div class="confirmation-card p-3">
+            <h3 class="billing-title">Order Info</h3>
+            <table class="order-rable">
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">Order number</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: {{ order._id }}</td>
+              </tr>
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">Order Status</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: {{ order.order_status }}</td>
+              </tr>
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">Total</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: ${{ totalCost }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-4 mb-4 mb-xl-0">
+          <div class="confirmation-card p-3">
+            <h3 class="billing-title">Billing Address</h3>
+            <table class="order-rable">
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">Flat No</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: {{ flatNo }}</td>
+              </tr>
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">Building No</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: {{ buildingNo }}</td>
+              </tr>
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">Street</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: {{ street }}</td>
+              </tr>
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">City</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: {{ city }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-4 mb-4 mb-xl-0">
+          <div class="confirmation-card p-3">
+            <h3 class="billing-title">Payment Details</h3>
+            <table class="order-rable">
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">Payment Method:</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: {{ paymentMethod }}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="confirmation-card p-3">
+            <h3 class="billing-title">Contact Details</h3>
+            <table class="order-rable">
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">Phone Number</td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">: {{ phone1 }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="order_details_table">
+        <h2>Order Details</h2>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of order?.orderProducts">
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">
+                  <p>{{ product.productId.name }}</p>
+                </td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">
+                  <h5>x {{ product.quantity }}</h5>
+                </td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">
+                  <p>$ {{ product.productId.price * product.quantity }}</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2"></td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2"></td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">
+                  <p>Shipping fees: $60</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2"></td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2"></td>
+                <td class="border border-2 rounded-1 border border-primary-subtle p-2">
+                  <p>$ {{ totalCost }}</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+  

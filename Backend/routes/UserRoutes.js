@@ -51,12 +51,12 @@ router.post("/", userValidator, async (req, res) => {
 
     // Send response with token
     res.header("x-auth-token", token);
-    const data = {
+    res.status(200).json({
       token: token,
       isAdmin: user.isAdmin,
-      userName: user.name
-    };
-    return res.status(200).send(data);
+      userName: user.name, // Assuming user model has a 'name' field
+      message: "Logged in successfully"
+    });
 
   } catch (err) {
     console.error('Error during user registration:', err.message);

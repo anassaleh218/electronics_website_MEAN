@@ -20,7 +20,7 @@ const productSchema = new Schema({
   },
   category: {
     type: String,
-    enum: ["Electronics", "Mobiles", "Clothes", "Books", "Home", "Grocery", "Health"],
+    enum: ["Screen", "Mouse", "Keyboard", "Office", "Headphones","Mobiles"],
     required: true,
   },
   show: {
