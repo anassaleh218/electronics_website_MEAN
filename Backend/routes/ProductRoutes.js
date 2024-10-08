@@ -15,41 +15,6 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 
 // getAllProductsCategories
-/**
- * @swagger
- * /api/product/categories:
- *   get:
- *     summary: Retrieve all product categories
- *     description: Retrieves a list of distinct product categories along with the count of products in each category.
- *     tags:
- *       - Products
- *     responses:
- *       200:
- *         description: List of product categories retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   category:
- *                     type: string
- *                   count:
- *                     type: integer
- *                 example:
- *                   - category: "Electronics"
- *                     count: 15
- *                   - category: "Books"
- *                     count: 10
- *       400:
- *         description: Error retrieving categories
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Error retrieving categories"
- */
 router.get("/categories", async (req, res) => {
   try {
     // Get distinct category values using Mongoose aggregate
@@ -78,88 +43,21 @@ router.get("/categories", async (req, res) => {
 
 
 // getProductByCategory
-/**
- * @swagger
- * /api/product/category/{category}:
- *   get:
- *     summary: Retrieve products by category
- *     description: Retrieves a list of products that belong to the specified category. Transforms `img_url` into an array of image URLs.
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: category
- *         required: true
- *         description: The category of products to retrieve
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: List of products in the specified category
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     example: 1
- *                   name:
- *                     type: string
- *                     example: "Sample Product"
- *                   category:
- *                     type: string
- *                     example: "Electronics"
- *                   price:
- *                     type: number
- *                     format: float
- *                     example: 99.99
- *                   img_urls:
- *                     type: array
- *                     items:
- *                       type: string
- *                     example: ["image1.jpg", "image2.jpg"]
- *                   description:
- *                     type: string
- *                     example: "A detailed description of the product."
- *               example:
- *                 - id: 1
- *                   name: "Sample Product"
- *                   category: "Electronics"
- *                   price: 99.99
- *                   img_urls: ["image1.jpg", "image2.jpg"]
- *                   description: "A detailed description of the product."
- *       400:
- *         description: Error retrieving products
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Error retrieving product"
- */
 router.get("/category/:category", async (req, res) => {
   try {
-    // البحث عن جميع المنتجات في الفئة المطلوبة باستخدام Mongoose
     const products = await Product.find({
       category: req.params.category
     });
 
-    // تحويل كل منتج وفصل img_url إلى مصفوفة
     const transformedProducts = products.map(product => {
-      // تحويل بيانات المنتج إلى JSON
-      const productData = product.toObject(); // .toObject() بدلاً من .toJSON() في Mongoose
+    const productData = product.toObject(); // .toObject() بدلاً من .toJSON() في Mongoose
 
-      // تحويل img_url من سلسلة نصية إلى مصفوفة
       if (productData.img_url) {
         productData.img_urls = productData.img_url.split(',');
       } else {
         productData.img_urls = [];
       }
 
-      // // إزالة الحقل الأصلي img_url إذا كنت ترغب في ذلك
-      // delete productData.img_url;
 
       return productData;
     });
@@ -171,82 +69,22 @@ router.get("/category/:category", async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/product:
- *   get:
- *     summary: Retrieve all products
- *     description: Retrieves a list of all products. Transforms `img_url` into an array of image URLs.
- *     tags:
- *       - Products
- *     responses:
- *       200:
- *         description: List of all products
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     example: 1
- *                   name:
- *                     type: string
- *                     example: "Sample Product"
- *                   category:
- *                     type: string
- *                     example: "Electronics"
- *                   price:
- *                     type: number
- *                     format: float
- *                     example: 99.99
- *                   img_urls:
- *                     type: array
- *                     items:
- *                       type: string
- *                     example: ["image1.jpg", "image2.jpg"]
- *                   description:
- *                     type: string
- *                     example: "A detailed description of the product."
- *               example:
- *                 - id: 1
- *                   name: "Sample Product"
- *                   category: "Electronics"
- *                   price: 99.99
- *                   img_urls: ["image1.jpg", "image2.jpg"]
- *                   description: "A detailed description of the product."
- *       400:
- *         description: Error retrieving products
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Error retrieving products"
- */
 router.get("/", async (req, res) => {
   try {
-    // البحث عن جميع المنتجات باستخدام Mongoose
     const products = await Product.find();
 
-    // تحويل الحقل img_url إلى مصفوفة
     const transformedProducts = products.map(product => {
-      // تحويل بيانات المنتج إلى كائن JavaScript
-      const productData = product.toObject(); // استخدمنا toObject() بدلاً من toJSON()
+      const productData = product.toObject(); 
 
-      // تحويل img_url من سلسلة نصية إلى مصفوفة
       productData.img_urls = productData.img_url ? productData.img_url.split(',') : [];
 
-      // // حذف الحقل الأصلي img_url إذا كان مطلوباً
-      // delete productData.img_url;
 
       return productData;
     });
 
     res.status(200).send(transformedProducts);
   } catch (err) {
-    console.error(err); // تسجيل الخطأ بالكامل للمساعدة في التصحيح
+    console.error(err); 
     res.status(400).send("Error retrieving products");
   }
 });
@@ -254,63 +92,6 @@ router.get("/", async (req, res) => {
 
 // to make product - only admin can add - MW 
 // auth
-/**
- * @swagger
- * /api/product:
- *   post:
- *     summary: Add a new product
- *     description: Adds a new product to the database. Only admin users can add products. Requires file uploads for images.
- *     tags:
- *       - Products
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 example: "New Product"
- *               description:
- *                 type: string
- *                 example: "A detailed description of the new product."
- *               price:
- *                 type: number
- *                 format: float
- *                 example: 49.99
- *               category:
- *                 type: string
- *                 example: "Books"
- *               prodimg:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: An array of product image files
- *                 format: binary
- *     responses:
- *       200:
- *         description: Product added successfully
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Product added successfully"
- *       400:
- *         description: Product addition failed
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Product addition failed. Please check the request data."
- *       403:
- *         description: Unauthorized - Only admins can add products
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Unauthorized - Only admins can add products"
- */
 // router.post("/", upload.array("prodimg", 10), auth, async (req, res) => {
 //   try {
 //     const imgUrls = req.files.map(file => file.filename);
@@ -333,111 +114,27 @@ router.get("/", async (req, res) => {
 /**to make product - anyone */ 
 router.post("/", upload.array("prodimg", 10), async (req, res) => {
   try {
-    // استخراج أسماء الملفات الخاصة بالصور من المرفقات
     const imgUrls = req.files.map(file => file.filename);
 
-    // إنشاء منتج جديد باستخدام Mongoose
     const prod = new Product({
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
-      img_url: imgUrls.join(','), // تخزين الروابط كسلسلة مفصولة بفواصل (إذا كنت تفضل استخدام array مباشرة، يمكن تعديل هذا)
+      img_url: imgUrls.join(','),
       category: req.body.category,
     });
 
-    // حفظ المنتج الجديد في قاعدة البيانات
     await prod.save();
 
     res.status(200).send("Product added successfully");
   } catch (err) {
-    console.error('Error:', err);  // تسجيل الخطأ بالكامل للمساعدة في التصحيح
+    console.error('Error:', err);  
     res.status(400).send("Product addition failed. Please check the request data.");
   }
 });
 
 
 // search = sort
-/**
- * @swagger
- * /api/product/searchsort:
- *   get:
- *     summary: Search and sort products
- *     description: Searches for products based on a search query and sorts them according to the specified criteria. Supports optional category filtering.
- *     tags:
- *       - Products
- *     parameters:
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Search query to filter products by name
- *         example: "laptop"
- *       - in: query
- *         name: sort_by
- *         schema:
- *           type: string
- *           enum:
- *             - name_asc
- *             - name_desc
- *             - price_asc
- *             - price_desc
- *         description: Sorting criteria for the product list
- *         example: "price_desc"
- *       - in: query
- *         name: category
- *         schema:
- *           type: string
- *         description: Filter products by category
- *         example: "Electronics"
- *     responses:
- *       200:
- *         description: List of products that match the search query and sorting criteria
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     example: 1
- *                   name:
- *                     type: string
- *                     example: "Sample Product"
- *                   category:
- *                     type: string
- *                     example: "Electronics"
- *                   price:
- *                     type: number
- *                     format: float
- *                     example: 99.99
- *                   img_urls:
- *                     type: array
- *                     items:
- *                       type: string
- *                     example: ["image1.jpg", "image2.jpg"]
- *                   description:
- *                     type: string
- *                     example: "A detailed description of the product."
- *               example:
- *                 - id: 1
- *                   name: "Sample Product"
- *                   category: "Electronics"
- *                   price: 99.99
- *                   img_urls: ["image1.jpg", "image2.jpg"]
- *                   description: "A detailed description of the product."
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Error message"
- */
 router.get('/searchsort', async (req, res) => {
   const { search = '', sort_by = '', category = '' } = req.query;
 
@@ -477,60 +174,6 @@ router.get('/searchsort', async (req, res) => {
 });
 
 //feedback
-/**
- * @swagger
- * /api/product/feedback:
- *   post:
- *     summary: Submit feedback for a product
- *     description: Allows an authenticated user to submit feedback and a rating for a specific product. Requires authentication via a JWT token.
- *     tags:
- *       - Products
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               productId:
- *                 type: integer
- *                 description: ID of the product being reviewed
- *                 example: 1
- *               feedback:
- *                 type: string
- *                 description: The feedback text for the product
- *                 example: "Great product, highly recommend!"
- *               rate:
- *                 type: integer
- *                 description: Rating given to the product (1 to 5)
- *                 example: 4
- *             required:
- *               - productId
- *               - feedback
- *               - rate
- *     responses:
- *       200:
- *         description: Feedback added successfully
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "feedback on product added successfully"
- *       400:
- *         description: Error adding feedback
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "feedback on product NOT added"
- *       401:
- *         description: Unauthorized - Access denied or invalid token
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Unauthorized - Access Denied"
- */
 router.post("/feedback", async (req, res) => {
   const token = req.header("x-auth-token");
 
@@ -562,65 +205,6 @@ router.post("/feedback", async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/product/feedbacks/{productId}:
- *   get:
- *     summary: Retrieve all feedbacks for a specific product
- *     description: Fetches all feedbacks and associated user names for a given product ID.
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: productId
- *         required: true
- *         description: ID of the product to retrieve feedbacks for
- *         schema:
- *           type: integer
- *         example: 1
- *     responses:
- *       200:
- *         description: List of feedbacks for the specified product
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     description: Feedback ID
- *                     example: 1
- *                   feedback:
- *                     type: string
- *                     description: The feedback text
- *                     example: "Great product, will buy again!"
- *                   rate:
- *                     type: integer
- *                     description: Rating given (1 to 5)
- *                     example: 5
- *                   User:
- *                     type: object
- *                     properties:
- *                       name:
- *                         type: string
- *                         description: Name of the user who provided the feedback
- *                         example: "John Doe"
- *               example:
- *                 - id: 1
- *                   feedback: "Great product, will buy again!"
- *                   rate: 5
- *                   User:
- *                     name: "John Doe"
- *       500:
- *         description: Error retrieving feedbacks
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Error fetching feedbacks"
- */
 router.get("/feedbacks/:productId", async (req, res) => {
   const { productId } = req.params;
   console.log("Received productId:", productId); // Log the received productId
@@ -658,91 +242,21 @@ router.get("/feedbacks/:productId", async (req, res) => {
 
 
 // getProductByID
-/**
- * @swagger
- * /api/product/prod/{id}:
- *   get:
- *     summary: Retrieve a product by ID
- *     description: Retrieves a product based on its ID. Transforms `img_url` into an array of image URLs.
- *     tags:
- *       - Products
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the product to retrieve
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Product retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   example: 1
- *                 name:
- *                   type: string
- *                   example: "Sample Product"
- *                 category:
- *                   type: string
- *                   example: "Electronics"
- *                 price:
- *                   type: number
- *                   format: float
- *                   example: 99.99
- *                 img_urls:
- *                   type: array
- *                   items:
- *                     type: string
- *                   example: ["image1.jpg", "image2.jpg"]
- *                 description:
- *                   type: string
- *                   example: "A detailed description of the product."
- *               example:
- *                 id: 1
- *                 name: "Sample Product"
- *                 category: "Electronics"
- *                 price: 99.99
- *                 img_urls: ["image1.jpg", "image2.jpg"]
- *                 description: "A detailed description of the product."
- *       404:
- *         description: Product not found
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Product with this id not found"
- *       400:
- *         description: Error retrieving product
- *         content:
- *           text/plain:
- *             schema:
- *               type: string
- *               example: "Error retrieving product"
- */
 router.get("/:id", async (req, res) => {
   try {
-    // البحث عن منتج باستخدام الـ id عبر Mongoose
     const product = await Product.findById(req.params.id);
 
-    // تحقق من عدم وجود المنتج
     if (!product) {
       return res.status(404).send("Product with this id not found");
     }
 
-    // تحويل بيانات المنتج إلى كائن JavaScript
     const productData = product.toObject();
 
-    // تحويل img_url من سلسلة نصية إلى مصفوفة
     productData.img_urls = productData.img_url ? productData.img_url.split(',') : [];
 
     res.status(200).send(productData);
   } catch (err) {
-    console.error(err); // تسجيل الخطأ بالكامل للمساعدة في التصحيح
+    console.error(err); 
     res.status(400).send("Error retrieving product");
   }
 });
