@@ -12,5 +12,6 @@ export const routes: Routes = [
   // { path: 'checkout', component: CheckoutComponent },
   { path: 'orders', component: OrdersComponent},
   { path: 'order-details/:id', component: OrderDetailsComponent},
-  { path: '', component: ProductsComponent}
+  { path: '', component: LoginComponent},
+  { path: 'home', component: ProductsComponent},
 ];

@@ -180,7 +180,32 @@
 					"name": "Search-Sort-Category",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/prod/searchsort/?search=&sort_by=&category",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"prod",
+								"searchsort",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "sort_by",
+									"value": ""
+								},
+								{
+									"key": "category",
+									"value": null
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -402,7 +427,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"johndoe@example.com\",\r\n    \"password\": \"123456789\"\r\n}",
+							"raw": "{\r\n    \"email\": \"user@gmail.com\",\r\n    \"password\": \"12345\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -520,13 +545,13 @@
 						"header": [
 							{
 								"key": "x-auth-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjEzLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzE4ODc1NjU3LCJleHAiOjE3MTkxMzQ4NTd9.pI1EgLv6BXshybRWFKBLSfNvwhev1QV5kXTGKIwc0Hs",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NmZjMTM2NGY1YTdkZTdhZjkyZDM3Y2IiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzI4MjYyNzkwLCJleHAiOjE3Mjg1MjE5OTB9.UcVN0Kv-WQ_7bMqwB7aJGMBrT186GoRn_yuDkcShtww",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n            \"productId\": 3,\r\n            \"quantity\": 2\r\n}",
+							"raw": "{\r\n            \"productId\": \"66fc12d3f5a7de7af92d37c4\",\r\n            \"quantity\": 2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -565,7 +590,14 @@
 					"name": "get cart data",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NmZjMTM2NGY1YTdkZTdhZjkyZDM3Y2IiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzI4MjYyNzkwLCJleHAiOjE3Mjg1MjE5OTB9.UcVN0Kv-WQ_7bMqwB7aJGMBrT186GoRn_yuDkcShtww",
+								"type": "text"
+							}
+						],
+						"url": "{{base_url}}/cart/"
 					},
 					"response": []
 				},
@@ -611,20 +643,11 @@
 						"header": [
 							{
 								"key": "x-auth-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjEzLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzE4ODc1NjU3LCJleHAiOjE3MTkxMzQ4NTd9.pI1EgLv6BXshybRWFKBLSfNvwhev1QV5kXTGKIwc0Hs",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NmZjMTM2NGY1YTdkZTdhZjkyZDM3Y2IiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzI4MjYyNzkwLCJleHAiOjE3Mjg1MjE5OTB9.UcVN0Kv-WQ_7bMqwB7aJGMBrT186GoRn_yuDkcShtww",
 								"type": "text"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n            \"productId\": 3,\r\n            \"quantity\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "http://127.0.0.1:3000/api/cart"
+						"url": "{{base_url}}/order/"
 					},
 					"response": []
 				},
@@ -635,13 +658,13 @@
 						"header": [
 							{
 								"key": "x-auth-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjEzLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzE4ODc1NjU3LCJleHAiOjE3MTkxMzQ4NTd9.pI1EgLv6BXshybRWFKBLSfNvwhev1QV5kXTGKIwc0Hs",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NmZjMTM2NGY1YTdkZTdhZjkyZDM3Y2IiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzI4MjYyNzkwLCJleHAiOjE3Mjg1MjE5OTB9.UcVN0Kv-WQ_7bMqwB7aJGMBrT186GoRn_yuDkcShtww",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"OrderId\": 12345,\r\n    \"name\": \"John Doe\",\r\n    \"phone1\": \"01234567890\",\r\n    \"phone2\": \"09876543210\",\r\n    \"flatNo\": \"10A\",\r\n    \"floorNo\": \"2\",\r\n    \"buildingNo\": \"5\",\r\n    \"street\": \"Main St\",\r\n    \"city\": \"Cairo\",\r\n    \"details\": \"Delivery to the main entrance\",\r\n    \"totalCost\": 150.75,\r\n    \"paymentMethod\": \"Credit Card\"\r\n}\r\n",
+							"raw": "{\r\n    \"orderId\": \"67033704613a65c4dcc4be02\",\r\n    \"name\": \"John Doe\",\r\n    \"phone1\": \"01234567890\",\r\n    \"phone2\": \"09876543210\",\r\n    \"flatNo\": 10,\r\n    \"floorNo\": \"2\",\r\n    \"buildingNo\": 5,\r\n    \"street\": \"Main St\",\r\n    \"city\": \"Cairo\",\r\n    \"details\": \"Delivery to the main entrance\",\r\n    \"totalCost\": 150.75,\r\n    \"paymentMethod\": \"Credit Card\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -656,7 +679,14 @@
 					"name": "get all orders",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NmZjMTM2NGY1YTdkZTdhZjkyZDM3Y2IiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzI4MjYyNzkwLCJleHAiOjE3Mjg1MjE5OTB9.UcVN0Kv-WQ_7bMqwB7aJGMBrT186GoRn_yuDkcShtww",
+								"type": "text"
+							}
+						],
+						"url": "{{base_url}}/order/all"
 					},
 					"response": []
 				},
@@ -664,7 +694,14 @@
 					"name": "get latest order",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NmZjMTM2NGY1YTdkZTdhZjkyZDM3Y2IiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzI4MjYyNzkwLCJleHAiOjE3Mjg1MjE5OTB9.UcVN0Kv-WQ_7bMqwB7aJGMBrT186GoRn_yuDkcShtww",
+								"type": "text"
+							}
+						],
+						"url": "{{base_url}}/order/latest"
 					},
 					"response": []
 				},
@@ -675,26 +712,11 @@
 						"header": [
 							{
 								"key": "x-auth-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NmZiZjUzMTIyZDRkYWQ2ZTU2OWUzZWEiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzI3Nzg4OTYwLCJleHAiOjE3MjgwNDgxNjB9.H0mOYfHr7PGDNI740Z0g6T4uMCTt4lMTP8bgKLE6AbA",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NmZjMTM2NGY1YTdkZTdhZjkyZDM3Y2IiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzI4MzYzNzAzLCJleHAiOjE3Mjg2MjI5MDN9.8UTKY3gj2zROgjPm1REE_IaOiLq9xBFkJINF9Xz4tc8",
 								"type": "text"
 							}
 						],
-						"url": {
-							"raw": "{{base_url}}/order/:id",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"order",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": ""
-								}
-							]
-						}
+						"url": "{{base_url}}/order/67033704613a65c4dcc4be02"
 					},
 					"response": []
 				},

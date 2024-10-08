@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginData = {
     email: '',
     password: '',
@@ -16,6 +16,29 @@ export class LoginComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  ngOnInit(): void {
+    // Check if the token and isAdmin cookie exist
+    const token = this.getCookie('token');
+    const isAdmin = this.getCookie('isAdmin');
+
+    // If there is a token and the user is not an admin, redirect to home
+    if (token && isAdmin === 'false') {
+      this.router.navigate(['/home']);
+    }
+  }
+
+  // Helper function to get a cookie by name
+  getCookie(name: string): string | null {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      const cookieValue = parts.pop()?.split(';').shift();
+      return cookieValue ? cookieValue : null; // Return null if cookieValue is undefined
+    }
+    return null; // Return null if the cookie was not found
+  }
+
+  // Method to handle the form submission
   onSubmit(loginForm: any) {
     if (loginForm.valid) {
       this.http
@@ -31,13 +54,13 @@ export class LoginComponent {
             // Check for required properties in the response
             if (response.token && response.isAdmin !== undefined && response.userName) {
               // Set cookies
-              document.cookie = `token=${response.token}`;
-              document.cookie = `isAdmin=${response.isAdmin}`;
-              document.cookie = `userName=${response.userName}`;
+              document.cookie = `token=${response.token}; path=/`; // Added path for cookie
+              document.cookie = `isAdmin=${response.isAdmin}; path=/`; // Added path for cookie
+              document.cookie = `userName=${response.userName}; path=/`; // Added path for cookie
 
               // Navigate based on admin status
               if (response.isAdmin === false) {
-                this.router.navigate(['/products']);
+                this.router.navigate(['/home']);
               } else {
                 this.router.navigate(['/add-product']);
               }
